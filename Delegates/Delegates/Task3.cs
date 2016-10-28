@@ -6,18 +6,12 @@ using System.Threading.Tasks;
 
 namespace Task3
 {
-    interface IObservable
-    {
-        void AddObserver(IObserver observer);
-        void RemoveObserver(IObserver observer);
-    }
-
     public interface IObserver
     {
         void Update(string methodName, params int[] p);
     }
 
-    class DataModel : IObservable
+    class DataModel
     {
         private List<IObserver> Observers;
         private int[,] Table;
@@ -100,9 +94,9 @@ namespace Task3
 
     class Logger : IObserver
     {
-        IObservable Observable;
+        DataModel Observable;
 
-        public Logger(IObservable observable)
+        public Logger(DataModel observable)
         {
             Observable = observable;
             Observable.AddObserver(this);
@@ -115,9 +109,9 @@ namespace Task3
     }
     class View : IObserver
     {
-        IObservable Observable;
+        DataModel Observable;
 
-        public View(IObservable observable)
+        public View(DataModel observable)
         {
             Observable = observable;
             Observable.AddObserver(this);
