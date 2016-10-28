@@ -10,12 +10,11 @@ namespace Task3
     {
         void AddObserver(IObserver observer);
         void RemoveObserver(IObserver observer);
-        void NotifyObservers();
     }
 
     public interface IObserver
     {
-        void Update();
+        void Update(string methodName, params int[] p);
     }
 
     class DataModel : IObservable
@@ -34,11 +33,11 @@ namespace Task3
             Observers.Add(observer);
         }
 
-        public void NotifyObservers()
+        private void NotifyObservers(string methodName, params int[] p)
         {
             foreach (var observer in Observers)
             {
-                observer.Update();
+                observer.Update(methodName, p);
             }
         }
 
@@ -54,7 +53,9 @@ namespace Task3
             if (column < 0 || column >= Table.GetLength(1))
                 throw new ArgumentException("Wrog column");
             Table[row, column] = value;
-            NotifyObservers();
+            //DataModel.Put
+            string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
+            NotifyObservers(methodName, row, column, value);
         }
         public void InsertRow(int rowIndex)
         {
@@ -62,7 +63,8 @@ namespace Task3
                 throw new ArgumentException("Wrog row");
             int[,] newTable = new int[Table.GetLength(0) + 1, Table.GetLength(1)];
             UpdateTable(newTable);
-            NotifyObservers();
+            string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
+            NotifyObservers(methodName, rowIndex);
         }
         public void InsertColumn(int columnIndex)
         {
@@ -70,7 +72,8 @@ namespace Task3
                 throw new ArgumentException("Wrog column");
             int[,] newTable = new int[Table.GetLength(0), Table.GetLength(1) + 1];
             UpdateTable(newTable);
-            NotifyObservers();
+            string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
+            NotifyObservers(methodName, columnIndex);
         }
         private void UpdateTable(int[,] newTable)
         {
@@ -89,7 +92,8 @@ namespace Task3
                 throw new ArgumentException("Wrog row");
             if (column < 0 || column >= Table.GetLength(1))
                 throw new ArgumentException("Wrog column");
-            NotifyObservers();
+            string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
+            NotifyObservers(methodName, row, column);
             return Table[row, column];
         }
     }
@@ -104,7 +108,7 @@ namespace Task3
             Observable.AddObserver(this);
         }
 
-        public void Update()
+        public void Update(string methodName, params int[] p)
         {
             throw new NotImplementedException();
         }
@@ -119,7 +123,7 @@ namespace Task3
             Observable.AddObserver(this);
         }
 
-        public void Update()
+        public void Update(string methodName, params int[] p)
         {
             throw new NotImplementedException();
         }
