@@ -8,7 +8,7 @@ namespace Task3
 {
     public interface IObserver
     {
-        void Update(string methodName, params int[] p);
+        void Update(string methodName, Dictionary<string, int> paramsDict);
     }
 
     class DataModel
@@ -27,11 +27,11 @@ namespace Task3
             Observers.Add(observer);
         }
 
-        private void NotifyObservers(string methodName, params int[] p)
+        private void NotifyObservers(string methodName, Dictionary<string, int> paramsDict)
         {
             foreach (var observer in Observers)
             {
-                observer.Update(methodName, p);
+                observer.Update(methodName, paramsDict);
             }
         }
 
@@ -49,7 +49,12 @@ namespace Task3
             Table[row, column] = value;
             //DataModel.Put
             string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
-            NotifyObservers(methodName, row, column, value);
+            NotifyObservers(methodName, new Dictionary<string, int>
+            {
+                { "row", row },
+                { "column", column },
+                { "value", value }
+            });
         }
         public void InsertRow(int rowIndex)
         {
@@ -58,7 +63,10 @@ namespace Task3
             int[,] newTable = new int[Table.GetLength(0) + 1, Table.GetLength(1)];
             UpdateTable(newTable);
             string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
-            NotifyObservers(methodName, rowIndex);
+            NotifyObservers(methodName, new Dictionary<string, int>
+            {
+                { "rowIndex", rowIndex }
+            });
         }
         public void InsertColumn(int columnIndex)
         {
@@ -67,7 +75,10 @@ namespace Task3
             int[,] newTable = new int[Table.GetLength(0), Table.GetLength(1) + 1];
             UpdateTable(newTable);
             string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
-            NotifyObservers(methodName, columnIndex);
+            NotifyObservers(methodName, new Dictionary<string, int>
+            {
+                { "columnIndex", columnIndex }
+            });
         }
         private void UpdateTable(int[,] newTable)
         {
@@ -87,7 +98,11 @@ namespace Task3
             if (column < 0 || column >= Table.GetLength(1))
                 throw new ArgumentException("Wrog column");
             string methodName = GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name;
-            NotifyObservers(methodName, row, column);
+            NotifyObservers(methodName, new Dictionary<string, int>
+            {
+                { "row", row },
+                { "column", column }
+            });
             return Table[row, column];
         }
     }
@@ -102,7 +117,7 @@ namespace Task3
             Observable.AddObserver(this);
         }
 
-        public void Update(string methodName, params int[] p)
+        public void Update(string methodName, Dictionary<string, int> paramsDict)
         {
             throw new NotImplementedException();
         }
@@ -117,7 +132,7 @@ namespace Task3
             Observable.AddObserver(this);
         }
 
-        public void Update(string methodName, params int[] p)
+        public void Update(string methodName, Dictionary<string, int> paramsDict)
         {
             throw new NotImplementedException();
         }
